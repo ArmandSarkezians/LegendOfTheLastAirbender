@@ -1,0 +1,1473 @@
+%Armand
+%ISU Project - Legend Of The Last Airbender
+%Starting May 26th, 2017 - Ending June 16th, 2017
+setscreen ("graphics:1000;600")
+View.Set ("offscreenonly")
+
+forward procedure xMinus1yPlus1             %FOR THE MAP
+forward procedure yPlus1
+forward procedure xPlus1yPlus1
+forward procedure xPlus1
+forward procedure xPlus1yMinus1
+forward procedure yMinus1
+forward procedure xMinus1yMinus1
+forward procedure xMinus1
+forward procedure middle
+forward procedure mainMenu
+
+var buttonDown : array char of boolean          %ARRAY CHAR OF BOOLEAN
+
+var posX, posY : int := 50        %INTEGERS
+var speed : int := 3
+var gem : int
+var randX, randY : int := 0
+var coin : int := 0
+var value : int := 00
+var mX, mY, bD : int
+var monX, monY : int := 0
+var monHealth : int := 0
+var health : int := 500
+var randomMonster : int := 1
+var background : int := Pic.FileNew ("background2.bmp")
+var scaledBackground : int := Pic.Scale (background, 800, 600)
+var direction : int := 1
+var font : int := Font.New ("Times New Roman:36:bold")
+var damage : int := 100
+var bulletSpeed : int := 10
+var shootX, shootY : int
+var trans : int := Pic.FileNew ("transparent.bmp")
+var transparent : int := Pic.Scale (trans, 10, 5)
+var bossLeft : int := 4
+var monShootX, monShootY : int := 0
+var bossDamage : int := Pic.FileNew ("BossDamage.bmp")
+var menuPlay1 : int := Pic.FileNew ("Play.bmp")
+var menuHelp1 : int := Pic.FileNew ("Help.bmp")
+var menuBack1 : int := Pic.FileNew ("Back.bmp")
+var menuQuit1 : int := Pic.FileNew ("Quit.bmp")
+var menuPlay : int := Pic.Scale (menuPlay1, 200, 100)
+var menuHelp : int := Pic.Scale (menuHelp1, 200, 100)
+var menuBack : int := Pic.Scale (menuBack1, 200, 100)
+var menuQuit : int := Pic.Scale (menuQuit1, 200, 100)
+
+var gotCoin : boolean := false          %BOOLEAN
+var endProcess : boolean := false
+
+var unscaledPic : array 1 .. 4 of int           %ARRAY (ALMOST ALL PICTURES)
+unscaledPic (1) := Pic.FileNew ("AangUp.bmp")
+unscaledPic (2) := Pic.FileNew ("AangLeft.bmp")
+unscaledPic (3) := Pic.FileNew ("AangRight.bmp")
+unscaledPic (4) := Pic.FileNew ("AangDown.bmp")
+
+var scaledPic : array 1 .. 4 of int
+scaledPic (1) := Pic.Scale (unscaledPic (1), 30, 30)
+scaledPic (2) := Pic.Scale (unscaledPic (2), 30, 30)
+scaledPic (3) := Pic.Scale (unscaledPic (3), 30, 30)
+scaledPic (4) := Pic.Scale (unscaledPic (4), 30, 30)
+
+var gemArray : array 1 .. 3 of int
+gemArray (1) := Pic.FileNew ("BlueGem.bmp")
+gemArray (2) := Pic.FileNew ("RedGem.bmp")
+gemArray (3) := Pic.FileNew ("GreenGem.bmp")
+
+var monsterArray : array 1 .. 4 of int
+monsterArray (1) := Pic.FileNew ("BlueAlien.bmp")
+monsterArray (2) := Pic.FileNew ("GreenAlien.bmp")
+monsterArray (3) := Pic.FileNew ("PurpleAlien.bmp")
+monsterArray (4) := Pic.FileNew ("YellowAlien.bmp")
+
+var scaledMonster : array 1 .. 4 of int
+scaledMonster (1) := Pic.Scale (monsterArray (1), 100, 100)
+scaledMonster (2) := Pic.Scale (monsterArray (2), 100, 100)
+scaledMonster (3) := Pic.Scale (monsterArray (3), 100, 100)
+scaledMonster (4) := Pic.Scale (monsterArray (4), 100, 100)
+
+var unScaledDamage : array 1 .. 4 of int
+unScaledDamage (1) := Pic.FileNew ("DmgBlueAlien.bmp")
+unScaledDamage (2) := Pic.FileNew ("DmgGreenAlien.bmp")
+unScaledDamage (3) := Pic.FileNew ("DmgPurpleAlien.bmp")
+unScaledDamage (4) := Pic.FileNew ("DmgYellowAlien.bmp")
+
+var scaledDamage : array 1 .. 4 of int
+scaledDamage (1) := Pic.Scale (unScaledDamage (1), 100, 100)
+scaledDamage (2) := Pic.Scale (unScaledDamage (2), 100, 100)
+scaledDamage (3) := Pic.Scale (unScaledDamage (3), 100, 100)
+scaledDamage (4) := Pic.Scale (unScaledDamage (4), 100, 100)
+
+var boss : array 1 .. 4 of int
+boss (1) := Pic.FileNew ("BlueBoss.bmp")
+boss (2) := Pic.FileNew ("GreenBoss.bmp")
+boss (3) := Pic.FileNew ("PinkBoss.bmp")
+boss (4) := Pic.FileNew ("YellowBoss.bmp")
+
+var box : array 1 .. 2 of int
+box (1) := Pic.FileNew ("BulletSpeed.bmp")
+box (2) := Pic.FileNew ("BulletDamage.bmp")
+
+var scaledBox : array 1 .. 2 of int
+scaledBox (1) := Pic.Scale (box (1), 200, 100)
+scaledBox (2) := Pic.Scale (box (2), 200, 100)
+
+var healthOfBoss : array 1 .. 4 of int
+healthOfBoss (1) := 25000
+healthOfBoss (2) := 35000
+healthOfBoss (3) := 45000
+healthOfBoss (4) := 55000
+
+var booleanSubtract : array 1 .. 4 of boolean
+booleanSubtract (1) := false
+booleanSubtract (2) := false
+booleanSubtract (3) := false
+booleanSubtract (4) := false
+
+var fireball : array 1 .. 4 of int
+fireball (1) := Pic.FileNew ("FireBallUp.bmp")
+fireball (2) := Pic.FileNew ("FireBallRight.bmp")
+fireball (3) := Pic.FileNew ("FireBallLeft.bmp")
+fireball (4) := Pic.FileNew ("FireBallDown.bmp")
+
+var map : array 1 .. 9 of int
+map (1) := Pic.FileNew ("MiddleMap.jpg")
+map (2) := Pic.FileNew ("yMinus1.jpg")
+map (3) := Pic.FileNew ("yPlus1.jpg")
+map (4) := Pic.FileNew ("xMinus1.jpg")
+map (5) := Pic.FileNew ("xPlus1.jpg")
+map (6) := Pic.FileNew ("xPlus1yPlus1.jpg")
+map (7) := Pic.FileNew ("xPlus1yMinus1.jpg")
+map (8) := Pic.FileNew ("xMinus1yPlus1.jpg")
+map (9) := Pic.FileNew ("xMinus1yMinus1.jpg")
+
+process music           %USED TO PLAY BACKGROUND MUSIC
+    loop
+	Music.PlayFile ("AVATAR.mp3")
+    end loop
+end music
+
+
+
+process movement            %MOVEMENT OF THE CHARACTER
+    Pic.Draw (scaledPic (1), posX, posY, picMerge)
+    loop
+	exit when endProcess = true
+	exit when health <= 0
+	Input.KeyDown (buttonDown)
+	if buttonDown ('w') then
+	    posY := posY + speed
+	    Pic.Draw (scaledPic (1), posX, posY, picMerge)
+	    direction := 1              %USED TO DETERMINE WHICH WAY THE CHARACTER SHOULD BE DRAWN WHEN THEY STOP MOVING
+	    delay (5)
+	elsif buttonDown ('a') then
+	    posX := posX - speed
+	    Pic.Draw (scaledPic (2), posX, posY, picMerge)
+	    direction := 2
+	    delay (5)
+	elsif buttonDown ('s') then
+	    posY := posY - speed
+	    Pic.Draw (scaledPic (4), posX, posY, picMerge)
+	    direction := 4
+	    delay (5)
+	elsif buttonDown ('d') then
+	    posX := posX + speed
+	    Pic.Draw (scaledPic (3), posX, posY, picMerge)
+	    direction := 3
+	    delay (5)
+	end if
+	Pic.Draw (scaledPic (direction), posX, posY, picMerge)
+    end loop
+end movement
+
+
+
+process Gem
+    randint (gem, 1, 10)
+    randint (randX, 100, 800 - 100)
+    randint (randY, 100, 5900)
+    gotCoin := false
+    loop
+	exit when endProcess = true
+	if gotCoin = false then             %ONLY DRAWS A GEM IF ONE HAS NOT BEET TAKEN YET
+	    loop
+		if gem <= 5 then
+		    Pic.Draw (gemArray (1), randX, randY, picMerge)
+		    value := 20
+		elsif gem <= 7 then
+		    Pic.Draw (gemArray (2), randX, randY, picMerge)
+		    value := 50
+		elsif gem <= 10 then
+		    Pic.Draw (gemArray (3), randX, randY, picMerge)
+		    value := 100
+		end if
+		delay (1)
+		exit when gotCoin = true or endProcess = true
+	    end loop
+	end if
+    end loop
+end Gem
+
+
+
+process gemDetection
+    loop
+	exit when endProcess = true
+	exit when health <= 0
+	if gotCoin = false then             %CHECKS IF THE USER IS ON THE LOCATION OF THE GEM, IF SO IT ADDS THE VALUE OF THE GEM TO THE USERS COIN COUNT
+	    if posX < randX + 20 and posY < randY + 20 and posX + 30 > randX and posY + 30 > randY then
+		coin := coin + value
+		gotCoin := true
+	    end if
+	end if
+    end loop
+end gemDetection
+
+
+
+process shop            %CREATES THE OPTION TO BUY ONE OF TWO UPGRADES, SPEED OR DAMAMGE
+    loop
+	exit when endProcess = true
+	Mouse.Where (mX, mY, bD)
+	Pic.Draw (scaledBox (2), 800, 1, picMerge)
+	Pic.Draw (scaledBox (1), 800, 105, picMerge)
+	if mX > 803 and mX < 997 and mY > 3 and mY < 97 and bD = 1 and damage >= 500 then           %CAP FOR HOW MUCH DAMAGE A BULLET CAN HAVE, OTHERWISE IT WOULD ONE SHOT EVERYTHING
+	    locatexy (810, 520)
+	    put "Maximum Damage Reached!"
+	    delay (3000)
+	    drawfillbox (800, 520, 1000, 550, white)
+	end if
+	if mX > 803 and mX < 997 and mY > 3 and mY < 97 and bD = 1 and coin >= 50 then
+	    damage := damage + 100
+	    coin := coin - 50
+	    delay (150)
+	end if
+	if mX > 803 and mX < 997 and mY > 110 and mY < 206 and bD = 1 and coin >= 50 and bulletSpeed < 17 then
+	    %CAP FOR HOW MUCH SPEED A BULLET CAN HAVE, OTHERWISE IT WOULD NOT APPEAR ON THE SCREEN
+	    bulletSpeed := bulletSpeed + 1
+	    coin := coin - 50
+	    delay (150)
+	end if
+	if mX > 803 and mX < 997 and mY > 110 and mY < 206 and bD = 1 and coin >= 50 and bulletSpeed > 13 then
+	    locatexy (810, 520)
+	    put "Maximum Speed Reached"
+	    delay (3000)
+	    drawfillbox (800, 520, 1000, 550, white)
+	end if
+	if mX > 803 and mX < 997 and mY > 3 and mY < 97 and bD = 1 and coin < 50 or mX > 803 and mX < 997 and mY > 110 and mY < 206 and bD = 1 and coin < 50 then
+	    %CHECKING TO SEE IF THEY USER HAS >50 COINS
+	    locatexy (810, 520)
+	    put "Not Enough Coins"
+	    delay (3000)
+	    drawfillbox (800, 520, 950, 560, white)
+	end if
+    end loop
+end shop
+
+
+
+process monsterSpawn            %SPAWNS ONE OF FOUR MONSTERS, BLUE (WEAKEST), GREEN (SECOND WEAKEST), PURPLE (SECOND STRONGEST), YELLOW (STRONGEST)
+    loop
+	exit when endProcess = true
+	exit when health <= 0
+	monHealth := 5000
+	randint (monX, 150, 600)
+	randint (monY, 150, 400)
+	randint (randomMonster, 1, 4)
+	if randomMonster = 1 then           %DETERMINES THE HEALTH OF THE MONSTERS DEPENDENT ON WHAT COLOR THE MONSTER IS
+	    monHealth := 1000
+	elsif randomMonster = 2 then
+	    monHealth := 2000
+	elsif randomMonster = 3 then
+	    monHealth := 3000
+	elsif randomMonster = 4 then
+	    monHealth := 4000
+	end if
+	loop
+	    exit when endProcess = true
+	    Pic.Draw (scaledMonster (randomMonster), monX, monY, picMerge)
+	    if monHealth <= 0 then
+		coin := coin + (randomMonster * 10)
+		exit
+	    end if
+	end loop
+    end loop
+end monsterSpawn
+
+
+
+process damageToMob         %CREATES THE FIREBALL IMAGE WHEN THE MOUSE IS CLICKED AND CHECKS IF IT HIT THE MONSTER
+    loop
+	exit when endProcess = true
+	exit when health <= 0
+	Mouse.Where (mX, mY, bD)
+	shootX := posX
+	shootY := posY
+	if mX < 800 then
+	    if direction = 1 and bD = 1 then
+		for x : 10 .. 800 by bulletSpeed
+		    Pic.Draw (fireball (1), shootX + 15, shootY + x, picMerge)
+		    if shootY + x + 10 > monY + 30 and shootX + 10 > monX + 30 and shootX < monX + 65 and shootY + x < monY + 78 then
+			Pic.Draw (scaledDamage (randomMonster), monX, monY, picMerge)
+			monHealth := monHealth - damage
+		    end if
+		    delay (1)
+		end for
+	    elsif direction = 2 and bD = 1 then
+		for x : 10 .. 800 by bulletSpeed
+		    Pic.Draw (fireball (3), shootX - x, shootY + 15, picMerge)
+		    if shootX - x - 10 < monX + 65 and shootY > monY and shootY + 10 < monY + 78 and shootX - x > monX + 30 then
+			Pic.Draw (scaledDamage (randomMonster), monX, monY, picMerge)
+			monHealth := monHealth - damage
+		    end if
+		    delay (1)
+		end for
+	    elsif direction = 4 and bD = 1 then
+		for x : 10 .. 800 by bulletSpeed
+		    Pic.Draw (fireball (4), shootX + 15, shootY - x, picMerge)
+		    if shootY - x - 10 < monY + 78 and shootX > monX and shootX + 10 < monX + 68 and shootY - x > monY + 30 then
+			Pic.Draw (scaledDamage (randomMonster), monX, monY, picMerge)
+			monHealth := monHealth - damage
+		    end if
+		    delay (1)
+		end for
+	    elsif direction = 3 and bD = 1 then
+		for x : 10 .. 800 by bulletSpeed
+		    if shootX + x + 10 <= 790 then          %USED TO MAKE SURE THE FIREBALL DOESNT GO OVER THE WHITE BOX ON THE RIGHT
+			Pic.Draw (fireball (2), shootX + x, shootY + 15, picMerge)
+		    elsif shootX + x + 15 >= 790 then
+			Pic.Draw (transparent, shootX + x, shootY + 15, picMerge)
+		    end if
+		    if shootX + x + 10 > monX and shootY > monY and shootY + 10 < monY + 79 and shootX + x < monX + 65 then
+			Pic.Draw (scaledDamage (randomMonster), monX, monY, picMerge)
+			monHealth := monHealth - damage
+		    end if
+		    delay (1)
+		end for
+	    end if
+	end if
+    end loop
+end damageToMob
+
+
+
+process damageToYou
+    loop
+	exit when endProcess = true         %CHECKS IF YOU ARE INSIDE THE MONSTER, IF SO IT TAKES HEALTH OFF
+	if posX + 30 > monX + 30 and posX < monX + 65 and posY + 30 > monY + 28 and posY < monY + 78 then
+	    health := health - 50
+	    delay (600)
+	end if
+    end loop
+end damageToYou
+
+
+
+process death           %CHECKS TO SEE IF YOU DIED OR NOT
+    loop
+	if health <= 0 then
+	    delay (20)
+	    endProcess := true
+	    delay (1000)
+	    cls
+	    locatexy (480, 300)
+	    put "You Died!"
+	    View.Update
+	    delay (4000)
+	    endProcess := false
+	    mainMenu
+	end if
+    end loop
+end death
+
+
+
+process win         %CHECKS TO SEE IF YOU WON OR NOT
+    loop
+	if bossLeft = 0 then
+	    delay (20)
+	    endProcess := true
+	    delay (20)
+	    cls
+	    locatexy (480, 300)
+	    put "You won! Congrats!"
+	    View.Update
+	    delay (4000)
+	    endProcess := false
+	    mainMenu
+	end if
+    end loop
+end win
+
+
+
+process left            %CODE FOR BOSS TO SHOOT LEFT
+    delay (200)
+    for x : 1 .. 500 by 2
+	exit when endProcess = true
+	drawline (450 - x, 250, 450 - x - 7, 250, black)
+	delay (1)
+	if 450 - x - 7 > posX and 250 > posY and 250 < posY + 30 and 450 - x < posX + 30 then
+	    health := health - 1
+	end if
+    end for
+end left
+
+
+
+process right            %CODE FOR BOSS TO SHOOT RIGHT
+    delay (200)
+    for x : 1 .. 500 by 2
+	exit when endProcess = true
+	drawline (450 + x, 250, 450 + x + 7, 250, black)
+	if 450 + x + 7 >= 800 then
+	    drawfillbox (450 + x, 250, 450 + x + 7, 250, white)
+	end if
+	delay (1)
+	if 450 + x + 7 > posX and 250 > posY and 250 < posY + 30 and 450 + x < posX + 30 then
+	    health := health - 1
+	end if
+    end for
+end right
+
+
+
+process up            %CODE FOR BOSS TO SHOOT UP
+    delay (200)
+    for x : 1 .. 500 by 2
+	exit when endProcess = true
+	drawline (450, 250 + x, 450, 250 + x + 7, black)
+	delay (1)
+	if 450 > posX and 450 < posX + 30 and 250 + x > posY and 250 + x + 7 < posY + 30 then
+	    health := health - 1
+	end if
+    end for
+end up
+
+
+
+process down            %CODE FOR BOSS TO SHOOT DOWN
+    delay (200)
+    for x : 1 .. 500 by 2
+	exit when endProcess = true
+	drawline (450, 250 - x, 450, 250 - x - 7, black)
+	delay (1)
+	if 450 > posX and 450 < posX + 30 and 250 - x - 7 > posY and 250 - x < posY + 30 then
+	    health := health - 1
+	end if
+    end for
+end down
+
+
+
+process bossShootTopLeft            %CODE FOR TOP LEFT BOSS, SHOOTING AND HIT DETECTION
+    loop
+	exit when endProcess = true or healthOfBoss (1) <= 0
+	monShootX := posX
+	monShootY := posY
+	if posX > 0 and posX < 400 and posY > 170 and posY < 300 then %LEFT
+	    fork left
+	    delay (200)
+	    fork left
+	    delay (400)
+	    for x : 1 .. 500 by 2
+		exit when endProcess = true or healthOfBoss (1) <= 0
+		drawline (450 - x, 250, 450 - x - 7, 250, black)
+		delay (1)
+		if 450 - x - 7 > posX and 250 > posY and 250 < posY + 30 and 450 - x > posX + 30 then
+		    health := health - 1
+		end if
+	    end for
+	elsif posX > 500 and posX < 800 and posY > 170 and posY < 300 then %RIGHT
+	    fork right
+	    delay (200)
+	    fork right
+	    delay (400)
+	    for x : 1 .. 500 by 2
+		exit when endProcess = true or healthOfBoss (1) <= 0
+		drawline (450 + x, 250, 450 + x + 7, 250, black)
+		if 450 + x + 7 >= 800 then
+		    drawfillbox (450 + x, 250, 450 + x + 7, 250, white)
+		end if
+		delay (1)
+		if 450 + x + 7 > posX and 250 > posY and 250 < posY + 30 and 450 + x < posX + 30 then
+		    health := health - 1
+		end if
+	    end for
+	elsif posX > 370 and posX < 500 and posY > 300 and posY < 600 then %UP
+	    fork up
+	    delay (200)
+	    fork up
+	    delay (400)
+	    for x : 1 .. 500 by 2
+		exit when endProcess = true or healthOfBoss (1) <= 0
+		drawline (450, 250 + x, 450, 250 + x + 7, black)
+		delay (1)
+		if 450 > posX and 450 < posX + 30 and 250 + x > posY and 250 + x + 7 < posY + 30 then
+		    health := health - 1
+		end if
+	    end for
+	elsif posX > 370 and posX < 500 and posY > 0 and posY < 200 then %DOWN
+	    fork down
+	    delay (200)
+	    fork down
+	    delay (400)
+	    for x : 1 .. 500 by 2
+		exit when endProcess = true or healthOfBoss (1) <= 0
+		drawline (450, 250 - x, 450, 250 - x - 7, black)
+		delay (1)
+		if 450 > posX and 450 < posX + 30 and 250 - x - 7 > posY and 250 - x < posY + 30 then
+		    health := health - 1
+		end if
+	    end for
+	end if
+    end loop
+end bossShootTopLeft
+
+
+
+process bossShootTopRight           %CODE FOR TOP RIGHT BOSS, SHOOTING AND HIT DETECTION
+    loop
+	exit when endProcess = true or healthOfBoss (2) <= 0
+	monShootX := posX
+	monShootY := posY
+	if posX > 0 and posX < 400 and posY > 170 and posY < 300 then %LEFT
+	    fork left
+	    delay (200)
+	    fork left
+	    delay (400)
+	    for x : 1 .. 500 by 2
+		exit when endProcess = true or healthOfBoss (2) <= 0
+		drawline (450 - x, 250, 450 - x - 7, 250, black)
+		delay (1)
+		if 450 - x - 7 > posX and 250 > posY and 250 < posY + 30 and 450 - x > posX + 30 then
+		    health := health - 1
+		end if
+	    end for
+	elsif posX > 500 and posX < 800 and posY > 170 and posY < 300 then %RIGHT
+	    fork right
+	    delay (200)
+	    fork right
+	    delay (400)
+	    for x : 1 .. 500 by 2
+		exit when endProcess = true or healthOfBoss (2) <= 0
+		drawline (450 + x, 250, 450 + x + 7, 250, black)
+		if 450 + x + 7 >= 800 then
+		    drawfillbox (450 + x, 250, 450 + x + 7, 250, white)
+		end if
+		delay (1)
+		if 450 + x + 7 > posX and 250 > posY and 250 < posY + 30 and 450 + x < posX + 30 then
+		    health := health - 1
+		end if
+	    end for
+	elsif posX > 370 and posX < 500 and posY > 300 and posY < 600 then %UP
+	    fork up
+	    delay (200)
+	    fork up
+	    delay (400)
+	    for x : 1 .. 500 by 2
+		exit when endProcess = true or healthOfBoss (2) <= 0
+		drawline (450, 250 + x, 450, 250 + x + 7, black)
+		delay (1)
+		if 450 > posX and 450 < posX + 30 and 250 + x > posY and 250 + x + 7 < posY + 30 then
+		    health := health - 1
+		end if
+	    end for
+	elsif posX > 370 and posX < 500 and posY > 0 and posY < 200 then %DOWN
+	    fork down
+	    delay (200)
+	    fork down
+	    delay (400)
+	    for x : 1 .. 500 by 2
+		exit when endProcess = true or healthOfBoss (2) <= 0
+		drawline (450, 250 - x, 450, 250 - x - 7, black)
+		delay (1)
+		if 450 > posX and 450 < posX + 30 and 250 - x - 7 > posY and 250 - x < posY + 30 then
+		    health := health - 1
+		end if
+	    end for
+	end if
+    end loop
+end bossShootTopRight
+
+
+
+process bossShootBottomLeft             %CODE FOR BOTTOM LEFT BOSS, SHOOTING AND HIT DETECTION
+    loop
+	exit when endProcess = true or healthOfBoss (3) <= 0
+	monShootX := posX
+	monShootY := posY
+	if posX > 0 and posX < 400 and posY > 170 and posY < 300 then %LEFT
+	    fork left
+	    delay (200)
+	    fork left
+	    delay (400)
+	    for x : 1 .. 500 by 2
+		exit when endProcess = true or healthOfBoss (3) <= 0
+		drawline (450 - x, 250, 450 - x - 7, 250, black)
+		delay (1)
+		if 450 - x - 7 > posX and 250 > posY and 250 < posY + 30 and 450 - x > posX + 30 then
+		    health := health - 1
+		end if
+	    end for
+	elsif posX > 500 and posX < 800 and posY > 170 and posY < 300 then %RIGHT
+	    fork right
+	    delay (200)
+	    fork right
+	    delay (400)
+	    for x : 1 .. 500 by 2
+		exit when endProcess = true or healthOfBoss (3) <= 0
+		drawline (450 + x, 250, 450 + x + 7, 250, black)
+		if 450 + x + 7 >= 800 then
+		    drawfillbox (450 + x, 250, 450 + x + 7, 250, white)
+		end if
+		delay (1)
+		if 450 + x + 7 > posX and 250 > posY and 250 < posY + 30 and 450 + x < posX + 30 then
+		    health := health - 1
+		end if
+	    end for
+	elsif posX > 370 and posX < 500 and posY > 300 and posY < 600 then %UP
+	    fork up
+	    delay (200)
+	    fork up
+	    delay (400)
+	    for x : 1 .. 500 by 2
+		exit when endProcess = true or healthOfBoss (3) <= 0
+		drawline (450, 250 + x, 450, 250 + x + 2, black)
+		delay (1)
+		if 450 > posX and 450 < posX + 30 and 250 + x > posY and 250 + x + 7 < posY + 30 then
+		    health := health - 1
+		end if
+	    end for
+	elsif posX > 370 and posX < 500 and posY > 0 and posY < 200 then %DOWN
+	    fork down
+	    delay (200)
+	    fork down
+	    delay (400)
+	    for x : 1 .. 500 by 2
+		exit when endProcess = true or healthOfBoss (3) <= 0
+		drawline (450, 250 - x, 450, 250 - x - 2, black)
+		delay (1)
+		if 450 > posX and 450 < posX + 30 and 250 - x - 7 > posY and 250 - x < posY + 30 then
+		    health := health - 1
+		end if
+	    end for
+	end if
+    end loop
+end bossShootBottomLeft
+
+
+
+process bossShootBottomRight            %CODE FOR BOTTOM RIGHT BOSS, SHOOTING AND HIT DETECTION
+    loop
+	exit when endProcess = true or healthOfBoss (4) <= 0
+	monShootX := posX
+	monShootY := posY
+	if posX > 0 and posX < 400 and posY > 170 and posY < 300 then %LEFT
+	    fork left
+	    delay (200)
+	    fork left
+	    delay (400)
+	    for x : 1 .. 500 by 2
+		exit when endProcess = true or healthOfBoss (4) <= 0
+		drawline (450 - x, 250, 450 - x - 2, 250, black)
+		delay (1)
+		if 450 - x - 7 > posX and 250 > posY and 250 < posY + 30 and 450 - x > posX + 30 then
+		    health := health - 1
+		end if
+	    end for
+	elsif posX > 500 and posX < 800 and posY > 170 and posY < 300 then %RIGHT
+	    fork right
+	    delay (200)
+	    fork right
+	    delay (400)
+	    for x : 1 .. 500 by 2
+		exit when endProcess = true or healthOfBoss (4) <= 0
+		drawline (450 + x, 250, 450 + x + 2, 250, black)
+		if 450 + x + 7 >= 800 then
+		    drawfillbox (450 + x, 250, 450 + x + 2, 250, white)
+		end if
+		delay (1)
+		if 450 + x + 7 > posX and 250 > posY and 250 < posY + 30 and 450 + x < posX + 30 then
+		    health := health - 1
+		end if
+	    end for
+	elsif posX > 370 and posX < 500 and posY > 300 and posY < 600 then %UP
+	    fork up
+	    delay (200)
+	    fork up
+	    delay (400)
+	    for x : 1 .. 500 by 2
+		exit when endProcess = true or healthOfBoss (4) <= 0
+		drawline (450, 250 + x, 450, 250 + x + 2, black)
+		delay (1)
+		if 450 > posX and 450 < posX + 30 and 250 + x > posY and 250 + x + 7 < posY + 30 then
+		    health := health - 1
+		end if
+	    end for
+	elsif posX > 370 and posX < 500 and posY > 0 and posY < 200 then %DOWN
+	    fork down
+	    delay (200)
+	    fork down
+	    delay (400)
+	    for x : 1 .. 500 by 2
+		exit when endProcess = true or healthOfBoss (4) <= 0
+		drawline (450, 250 - x, 450, 250 - x - 2, black)
+		delay (1)
+		if 450 > posX and 450 < posX + 30 and 250 - x - 7 > posY and 250 - x < posY + 30 then
+		    health := health - 1
+		end if
+	    end for
+	end if
+    end loop
+end bossShootBottomRight
+
+
+
+process bossDmgTopLeft          %CODE FOR USER SHOOTING TOP LEFT BOSS
+    loop
+	exit when endProcess = true or health <= 0
+	Mouse.Where (mX, mY, bD)
+	shootX := posX
+	shootY := posY
+	if mX < 800 then
+	    if direction = 1 and bD = 1 then %UP
+		for x : 10 .. 800 by bulletSpeed
+		    Pic.Draw (fireball (1), shootX + 15, shootY + x, picMerge)
+		    if shootY + x + 15 > 200 and shootX + 15 > 400 and shootX + 20 < 500 and shootY + x < 300 and healthOfBoss (1) > 0 then
+			Pic.Draw (bossDamage, 400, 200, picMerge)
+			healthOfBoss (1) := healthOfBoss (1) - damage
+		    end if
+		    delay (1)
+		end for
+	    elsif direction = 2 and bD = 1 then %LEFT
+		for x : 10 .. 800 by bulletSpeed
+		    Pic.Draw (fireball (3), shootX - x, shootY + 15, picMerge)
+		    if shootX - x - 15 < 500 and shootY + 15 > 200 and shootY + 20 < 300 and shootX - x > 400 and healthOfBoss (1) > 0 then
+			Pic.Draw (bossDamage, 400, 200, picMerge)
+			healthOfBoss (1) := healthOfBoss (1) - damage
+		    end if
+		    delay (1)
+		end for
+	    elsif direction = 4 and bD = 1 then  %DOWN
+		for x : 10 .. 800 by bulletSpeed
+		    Pic.Draw (fireball (4), shootX + 15, shootY - x, picMerge)
+		    if shootY - x - 15 < 300 and shootX + 15 > 400 and shootX + 20 < 500 and shootY - x > 200 and healthOfBoss (1) > 0 then
+			Pic.Draw (bossDamage, 400, 200, picMerge)
+			healthOfBoss (1) := healthOfBoss (1) - damage
+		    end if
+		    delay (1)
+		end for
+	    elsif direction = 3 and bD = 1 then %RIGHT
+		for x : 10 .. 800 by bulletSpeed
+		    if shootX + x + 10 <= 790 then
+			Pic.Draw (fireball (2), shootX + x, shootY + 15, picMerge)
+		    elsif shootX + x + 15 >= 790 then
+			Pic.Draw (transparent, shootX + x, shootY + 15, picMerge)
+		    end if
+		    if shootX + x + 15 > 400 and shootY + 15 > 200 and shootY + 20 < 300 and shootX + x < 500 and healthOfBoss (1) > 0 then
+			Pic.Draw (bossDamage, 400, 200, picMerge)
+			healthOfBoss (1) := healthOfBoss (1) - damage
+		    end if
+		    delay (1)
+		end for
+	    end if
+	end if
+    end loop
+end bossDmgTopLeft
+
+
+
+process bossDmgTopRight             %CODE FOR USER SHOOTING TOP RIGHT BOSS
+    loop
+	exit when endProcess = true or health <= 0
+	Mouse.Where (mX, mY, bD)
+	shootX := posX
+	shootY := posY
+	if mX < 800 then
+	    if direction = 1 and bD = 1 then %UP
+		for x : 10 .. 800 by bulletSpeed
+		    Pic.Draw (fireball (1), shootX + 15, shootY + x, picMerge)
+		    if shootY + x + 15 > 200 and shootX + 15 > 400 and shootX + 20 < 500 and shootY + x < 300 and healthOfBoss (2) > 0 then
+			Pic.Draw (bossDamage, 400, 200, picMerge)
+			healthOfBoss (2) := healthOfBoss (2) - damage
+		    end if
+		    delay (1)
+		end for
+	    elsif direction = 2 and bD = 1 then %LEFT
+		for x : 10 .. 800 by bulletSpeed
+		    Pic.Draw (fireball (3), shootX - x, shootY + 15, picMerge)
+		    if shootX - x - 15 < 500 and shootY + 15 > 200 and shootY + 20 < 300 and shootX - x > 400 and healthOfBoss (2) > 0 then
+			Pic.Draw (bossDamage, 400, 200, picMerge)
+			healthOfBoss (2) := healthOfBoss (2) - damage
+		    end if
+		    delay (1)
+		end for
+	    elsif direction = 4 and bD = 1 then  %DOWN
+		for x : 10 .. 800 by bulletSpeed
+		    Pic.Draw (fireball (4), shootX + 15, shootY - x, picMerge)
+		    if shootY - x - 15 < 300 and shootX + 15 > 400 and shootX + 20 < 500 and shootY - x > 200 and healthOfBoss (2) > 0 then
+			Pic.Draw (bossDamage, 400, 200, picMerge)
+			healthOfBoss (2) := healthOfBoss (2) - damage
+		    end if
+		    delay (1)
+		end for
+	    elsif direction = 3 and bD = 1 then %RIGHT
+		for x : 10 .. 800 by bulletSpeed
+		    if shootX + x + 10 <= 790 then
+			Pic.Draw (fireball (2), shootX + x, shootY + 15, picMerge)
+		    elsif shootX + x + 15 >= 790 then
+			Pic.Draw (transparent, shootX + x, shootY + 15, picMerge)
+		    end if
+		    if shootX + x + 15 > 400 and shootY + 15 > 200 and shootY + 20 < 300 and shootX + x < 500 and healthOfBoss (2) > 0 then
+			Pic.Draw (bossDamage, 400, 200, picMerge)
+			healthOfBoss (2) := healthOfBoss (2) - damage
+		    end if
+		    delay (1)
+		end for
+	    end if
+	end if
+    end loop
+end bossDmgTopRight
+
+
+
+process bossDmgBottomLeft           %CODE FOR USER SHOOTING BOTTOM LEFT BOSS
+    loop
+	exit when endProcess = true or health <= 0
+	Mouse.Where (mX, mY, bD)
+	shootX := posX
+	shootY := posY
+	if mX < 800 then
+	    if direction = 1 and bD = 1 then %UP
+		for x : 10 .. 800 by bulletSpeed
+		    Pic.Draw (fireball (1), shootX + 15, shootY + x, picMerge)
+		    if shootY + x + 15 > 200 and shootX + 15 > 400 and shootX + 20 < 500 and shootY + x < 300 and healthOfBoss (3) > 0 then
+			Pic.Draw (bossDamage, 400, 200, picMerge)
+			healthOfBoss (3) := healthOfBoss (3) - damage
+		    end if
+		    delay (1)
+		end for
+	    elsif direction = 2 and bD = 1 then %LEFT
+		for x : 10 .. 800 by bulletSpeed
+		    Pic.Draw (fireball (3), shootX - x, shootY + 15, picMerge)
+		    if shootX - x - 15 < 500 and shootY + 15 > 200 and shootY + 20 < 300 and shootX - x > 400 and healthOfBoss (3) > 0 then
+			Pic.Draw (bossDamage, 400, 200, picMerge)
+			healthOfBoss (3) := healthOfBoss (3) - damage
+		    end if
+		    delay (1)
+		end for
+	    elsif direction = 4 and bD = 1 then  %DOWN
+		for x : 10 .. 800 by bulletSpeed
+		    Pic.Draw (fireball (4), shootX + 15, shootY - x, picMerge)
+		    if shootY - x - 15 < 300 and shootX + 15 > 400 and shootX + 20 < 500 and shootY - x > 200 and healthOfBoss (3) > 0 then
+			Pic.Draw (bossDamage, 400, 200, picMerge)
+			healthOfBoss (3) := healthOfBoss (3) - damage
+		    end if
+		    delay (1)
+		end for
+	    elsif direction = 3 and bD = 1 then %RIGHT
+		for x : 10 .. 800 by bulletSpeed
+		    if shootX + x + 10 <= 790 then
+			Pic.Draw (fireball (2), shootX + x, shootY + 15, picMerge)
+		    elsif shootX + x + 15 >= 790 then
+			Pic.Draw (transparent, shootX + x, shootY + 15, picMerge)
+		    end if
+		    if shootX + x + 15 > 400 and shootY + 15 > 200 and shootY + 20 < 300 and shootX + x < 500 and healthOfBoss (3) > 0 then
+			Pic.Draw (bossDamage, 400, 200, picMerge)
+			healthOfBoss (3) := healthOfBoss (3) - damage
+		    end if
+		    delay (1)
+		end for
+	    end if
+	end if
+    end loop
+end bossDmgBottomLeft
+
+
+
+process bossDmgBottomRight              %CODE FOR USER SHOOTING BOTTOM RIGHT BOSS
+    loop
+	exit when endProcess = true or health <= 0
+	Mouse.Where (mX, mY, bD)
+	shootX := posX
+	shootY := posY
+	if mX < 800 then
+	    if direction = 1 and bD = 1 then %UP
+		for x : 10 .. 800 by bulletSpeed
+		    Pic.Draw (fireball (1), shootX + 15, shootY + x, picMerge)
+		    if shootY + x + 15 > 200 and shootX + 15 > 400 and shootX + 20 < 500 and shootY + x < 300 and healthOfBoss (4) > 0 then
+			Pic.Draw (bossDamage, 400, 200, picMerge)
+			healthOfBoss (4) := healthOfBoss (4) - damage
+		    end if
+		    delay (1)
+		end for
+	    elsif direction = 2 and bD = 1 then %LEFT
+		for x : 10 .. 800 by bulletSpeed
+		    Pic.Draw (fireball (3), shootX - x, shootY + 15, picMerge)
+		    if shootX - x - 15 < 500 and shootY + 15 > 200 and shootY + 20 < 300 and shootX - x > 400 and healthOfBoss (4) > 0 then
+			Pic.Draw (bossDamage, 400, 200, picMerge)
+			healthOfBoss (4) := healthOfBoss (4) - damage
+		    end if
+		    delay (1)
+		end for
+	    elsif direction = 4 and bD = 1 then  %DOWN
+		for x : 10 .. 800 by bulletSpeed
+		    Pic.Draw (fireball (4), shootX + 15, shootY - x, picMerge)
+		    if shootY - x - 15 < 300 and shootX + 15 > 400 and shootX + 20 < 500 and shootY - x > 200 and healthOfBoss (4) > 0 then
+			Pic.Draw (bossDamage, 400, 200, picMerge)
+			healthOfBoss (4) := healthOfBoss (4) - damage
+		    end if
+		    delay (1)
+		end for
+	    elsif direction = 3 and bD = 1 then %RIGHT
+		for x : 10 .. 800 by bulletSpeed
+		    if shootX + x + 10 <= 790 then
+			Pic.Draw (fireball (2), shootX + x, shootY + 15, picMerge)
+		    elsif shootX + x + 15 >= 790 then
+			Pic.Draw (transparent, shootX + x, shootY + 15, picMerge)
+		    end if
+		    if shootX + x + 15 > 400 and shootY + 15 > 200 and shootY + 20 < 300 and shootX + x < 500 and healthOfBoss (4) > 0 then
+			Pic.Draw (bossDamage, 400, 200, picMerge)
+			healthOfBoss (4) := healthOfBoss (4) - damage
+		    end if
+		    delay (1)
+		end for
+	    end if
+	end if
+    end loop
+end bossDmgBottomRight
+
+
+
+body middle             %MIDDLE OF THE MAP
+endProcess := true          %ENDING THE PROCESSES
+delay (50)
+endProcess := false
+fork Gem                %RESTARTING PROCESSES
+fork movement
+fork gemDetection
+fork shop
+fork monsterSpawn
+fork death
+fork damageToMob
+fork damageToYou
+loop                %DRAWING BACKGROUND, MAP, STATES AND CHECKING FOR BORDERS
+    exit when endProcess = true
+    Pic.Draw (scaledBackground, 0, 0, picMerge)
+    Pic.Draw (map (1), 800, 220, picCopy)
+    locatexy (810, 590)
+    put "COINS: ", coin
+    locatexy (810, 580)
+    put "Health: ", health
+    locatexy (810, 560)
+    put "Bosses Left: ", bossLeft
+    locatexy (810, 540)
+    put "Health of Mob: ", monHealth
+    delay (1)
+    View.Update
+    if posX <= 10 then
+	posX := 745
+	xMinus1
+    end if
+    if posX >= 750 then
+	posX := 15
+	xPlus1
+    end if
+    if posY <= 10 then
+	posY := 565
+	yMinus1
+    end if
+    if posY >= 570 then
+	posY := 15
+	yPlus1
+    end if
+end loop
+end middle
+
+
+
+body xMinus1            %LEFT OF THE MAP
+endProcess := true
+delay (50)
+endProcess := false
+fork Gem
+fork movement
+fork gemDetection
+fork shop
+fork monsterSpawn
+fork death
+fork damageToMob
+fork damageToYou
+loop
+    exit when endProcess = true
+    Pic.Draw (scaledBackground, 0, 0, picMerge)
+    Pic.Draw (map (4), 800, 220, picCopy)
+    locatexy (810, 590)
+    put "COINS: ", coin
+    locatexy (810, 580)
+    put "Health: ", health
+    locatexy (810, 560)
+    put "Bosses Left: ", bossLeft
+    locatexy (810, 540)
+    put "Health of Mob: ", monHealth
+    delay (1)
+    View.Update
+    if posX <= 10 then
+	posX := 10
+    end if
+    if posX >= 750 then
+	posX := 15
+	middle
+    end if
+    if posY <= 10 then
+	posY := 565
+	xMinus1yMinus1
+    end if
+    if posY >= 570 then
+	posY := 15
+	xMinus1yPlus1
+    end if
+end loop
+end xMinus1
+
+
+
+body xPlus1             %RIGHT OF THE MAP
+endProcess := true
+delay (50)
+endProcess := false
+fork Gem
+fork movement
+fork gemDetection
+fork shop
+fork monsterSpawn
+fork death
+fork damageToMob
+fork damageToYou
+loop
+    exit when endProcess = true
+    Pic.Draw (scaledBackground, 0, 0, picMerge)
+    Pic.Draw (map (5), 800, 220, picCopy)
+    locatexy (810, 590)
+    put "COINS: ", coin
+    locatexy (810, 580)
+    put "Health: ", health
+    locatexy (810, 560)
+    put "Bosses Left: ", bossLeft
+    locatexy (810, 540)
+    put "Health of Mob: ", monHealth
+    delay (1)
+    View.Update
+    if posX <= 10 then
+	posX := 745
+	middle
+    end if
+    if posX >= 750 then
+	posX := 750
+    end if
+    if posY <= 10 then
+	posY := 565
+	xPlus1yMinus1
+    end if
+    if posY >= 570 then
+	posY := 15
+	xPlus1yPlus1
+    end if
+end loop
+end xPlus1
+
+
+
+body yPlus1             %TOP OF THE MAP
+endProcess := true
+delay (50)
+endProcess := false
+fork Gem
+fork movement
+fork gemDetection
+fork shop
+fork monsterSpawn
+fork death
+fork damageToMob
+fork damageToYou
+loop
+    exit when endProcess = true
+    Pic.Draw (scaledBackground, 0, 0, picMerge)
+    Pic.Draw (map (3), 800, 220, picCopy)
+    locatexy (810, 590)
+    put "COINS: ", coin
+    locatexy (810, 580)
+    put "Health: ", health
+    locatexy (810, 560)
+    put "Bosses Left: ", bossLeft
+    locatexy (810, 540)
+    put "Health of Mob: ", monHealth
+    delay (1)
+    View.Update
+    if posX <= 10 then
+	posX := 745
+	xMinus1yPlus1
+    end if
+    if posX >= 750 then
+	posX := 15
+	xPlus1yPlus1
+    end if
+    if posY <= 10 then
+	posY := 565
+	middle
+    end if
+    if posY >= 570 then
+	posY := 570
+    end if
+end loop
+end yPlus1
+
+
+
+body yMinus1            %BOTTOM OF THE MAP
+endProcess := true
+delay (50)
+endProcess := false
+fork Gem
+fork movement
+fork gemDetection
+fork shop
+fork monsterSpawn
+fork death
+fork damageToMob
+fork damageToYou
+loop
+    exit when endProcess = true
+    Pic.Draw (scaledBackground, 0, 0, picMerge)
+    Pic.Draw (map (2), 800, 220, picCopy)
+    locatexy (810, 590)
+    put "COINS: ", coin
+    locatexy (810, 580)
+    put "Health: ", health
+    locatexy (810, 560)
+    put "Bosses Left: ", bossLeft
+    locatexy (810, 540)
+    put "Health of Mob: ", monHealth
+    delay (1)
+    View.Update
+    if posX <= 10 then
+	posX := 745
+	xMinus1yMinus1
+    end if
+    if posX >= 750 then
+	posX := 15
+	xPlus1yMinus1
+    end if
+    if posY <= 10 then
+	posY := 10
+    end if
+    if posY >= 570 then
+	posY := 15
+	middle
+    end if
+end loop
+end yMinus1
+
+
+
+body xMinus1yMinus1             %BOTTOM LEFT
+endProcess := true
+delay (50)
+endProcess := false
+fork bossShootBottomLeft
+fork movement
+fork damageToYou
+fork shop
+fork death
+fork bossDmgBottomLeft
+fork win
+loop
+    exit when endProcess = true
+    Pic.Draw (scaledBackground, 0, 0, picMerge)
+    Pic.Draw (map (9), 800, 220, picCopy)
+    if healthOfBoss (3) > 0 then
+	Pic.Draw (boss (2), 400, 200, picMerge)
+	if posX + 30 > 400 and posX < 500 and posY > 200 and posY + 30 < 320 then
+	    health := health - 1
+	    delay (5)
+	end if
+    elsif healthOfBoss (3) <= 0 and booleanSubtract (3) = false then
+	bossLeft := bossLeft - 1
+	booleanSubtract (3) := true
+    end if
+    locatexy (810, 590)
+    put "COINS: ", coin
+    locatexy (810, 580)
+    put "Health: ", health
+    locatexy (810, 560)
+    put "Bosses Left: ", bossLeft
+    locatexy (810, 540)
+    put "Health of Boss: ", healthOfBoss (3)
+    delay (1)
+    View.Update
+    if posX <= 10 then
+	posX := 10
+    end if
+    if posX >= 750 then
+	posX := 15
+	yMinus1
+    end if
+    if posY <= 10 then
+	posY := 10
+    end if
+    if posY >= 570 then
+	posY := 15
+	xMinus1
+    end if
+end loop
+end xMinus1yMinus1
+
+
+
+body xPlus1yMinus1              %BOTTOM RIGHT
+endProcess := true
+delay (50)
+endProcess := false
+fork bossShootBottomRight
+fork movement
+fork damageToYou
+fork shop
+fork death
+fork bossDmgBottomRight
+fork win
+loop
+    exit when endProcess = true
+    Pic.Draw (scaledBackground, 0, 0, picMerge)
+    Pic.Draw (map (7), 800, 220, picCopy)
+    if healthOfBoss (4) > 0 then
+	Pic.Draw (boss (4), 400, 200, picMerge)
+	if posX + 30 > 400 and posX < 500 and posY > 200 and posY + 30 < 320 then
+	    health := health - 1
+	    delay (5)
+	end if
+    elsif healthOfBoss (4) <= 0 and booleanSubtract (4) = false then
+	bossLeft := bossLeft - 1
+	booleanSubtract (4) := true
+    end if
+    locatexy (810, 590)
+    put "COINS: ", coin
+    locatexy (810, 580)
+    put "Health: ", health
+    locatexy (810, 560)
+    put "Bosses Left: ", bossLeft
+    locatexy (810, 540)
+    put "Health of Boss: ", healthOfBoss (4)
+    delay (1)
+    View.Update
+    if posX <= 10 then
+	posX := 745
+	yMinus1
+    end if
+    if posX >= 750 then
+	posX := 750
+    end if
+    if posY <= 10 then
+	posY := 10
+    end if
+    if posY >= 570 then
+	posY := 15
+	xPlus1
+    end if
+end loop
+end xPlus1yMinus1
+
+
+
+body xMinus1yPlus1              %TOP LEFT
+endProcess := true
+delay (50)
+endProcess := false
+fork bossShootTopLeft
+fork movement
+fork damageToYou
+fork shop
+fork death
+fork bossDmgTopLeft
+fork win
+loop
+    exit when endProcess = true
+    Pic.Draw (scaledBackground, 0, 0, picMerge)
+    Pic.Draw (map (8), 800, 220, picCopy)
+    if healthOfBoss (1) > 0 then
+	Pic.Draw (boss (1), 400, 200, picMerge)
+	if posX + 30 > 400 and posX < 500 and posY > 200 and posY + 30 < 320 then
+	    health := health - 1
+	    delay (5)
+	end if
+    elsif healthOfBoss (1) <= 0 and booleanSubtract (1) = false then
+	bossLeft := bossLeft - 1
+	booleanSubtract (1) := true
+    end if
+    locatexy (810, 590)
+    put "COINS: ", coin
+    locatexy (810, 580)
+    put "Health: ", health
+    locatexy (810, 560)
+    put "Bosses Left: ", bossLeft
+    locatexy (810, 540)
+    put "Health of Boss: ", healthOfBoss (1)
+    delay (1)
+    View.Update
+    if posX <= 10 then
+	posX := 10
+    end if
+    if posX >= 750 then
+	posX := 15
+	yPlus1
+    end if
+    if posY >= 570 then
+	posY := 570
+    end if
+    if posY <= 10 then
+	posY := 565
+	xMinus1
+    end if
+end loop
+end xMinus1yPlus1
+
+
+
+body xPlus1yPlus1               %TOP RIGHT
+endProcess := true
+delay (50)
+endProcess := false
+fork bossShootTopRight
+fork movement
+fork damageToYou
+fork shop
+fork death
+fork bossDmgTopRight
+fork win
+loop
+    exit when endProcess = true
+    Pic.Draw (scaledBackground, 0, 0, picMerge)
+    Pic.Draw (map (6), 800, 220, picCopy)
+    if healthOfBoss (2) > 0 then
+	Pic.Draw (boss (2), 400, 200, picMerge)
+	if posX + 30 > 400 and posX < 500 and posY > 200 and posY + 30 < 320 then
+	    health := health - 1
+	    delay (5)
+	end if
+    elsif healthOfBoss (2) <= 0 and booleanSubtract (2) = false then
+	bossLeft := bossLeft - 1
+	booleanSubtract (2) := true
+    end if
+    locatexy (810, 590)
+    put "COINS: ", coin
+    locatexy (810, 580)
+    put "Health: ", health
+    locatexy (810, 560)
+    put "Bosses Left: ", bossLeft
+    locatexy (810, 540)
+    put "Health of Boss: ", healthOfBoss (2)
+    delay (1)
+    View.Update
+    if posX <= 10 then
+	posX := 745
+	yPlus1
+    end if
+    if posX >= 750 then
+	posX := 750
+    end if
+    if posY <= 10 then
+	posY := 565
+	xPlus1
+    end if
+    if posY >= 570 then
+	posY := 570
+    end if
+end loop
+end xPlus1yPlus1
+
+
+
+body mainMenu           %INTRODUCTION, MAIN MENU, HELP AND QUIT
+cls
+loop
+    posX := 50          %RESET ALL VARIABLES
+    posY := 50
+    coin := 0
+    monHealth := 0
+    health := 500
+    randomMonster := 1
+    damage := 100
+    bulletSpeed := 10
+    bossLeft := 4
+    gotCoin := false
+    exit when endProcess = true
+    Font.Draw ("Legend of the Last Airbender", 200, 500, font, black)
+    Pic.Draw (menuHelp, 400, 150, picCopy)
+    Pic.Draw (menuPlay, 400, 300, picCopy)
+    Pic.Draw (menuQuit, 400, 0, picCopy)
+    View.Update
+    Mouse.Where (mX, mY, bD)
+    if mX > 400 and mX < 600 and mY > 150 and mY < 250 and bD = 1 then
+	cls
+	loop            %HOW TO PLAY / INFORMATION
+	    Mouse.Where (mX, mY, bD)
+	    locatexy (0, 600)
+	    put "PRESS W TO MOVE UP"
+	    put "PRESS A TO MOVE LEFT"
+	    put "PRESS S TO MOVE DOWN"
+	    put "PRESS D TO MOVE RIGHT"
+	    put "CLICK THE MOUSE BUTTON TO SHOOT"
+	    put "100 DAMAGE PER BULLET"
+	    put "SHOOT THE MONSTERS TO GAIN COINS"
+	    put "   BLUE MONSTER = 1000 HP = 10 COINS GIVEN UPON DEATH"
+	    put "   GREEN MONSTER = 2000 HP = 20 COINS GIVEN UPON DEATH"
+	    put "   PURPLE MONSTER = 3000 HP = 30 COINS GIVEN UPON DEATH"
+	    put "   YELLOW MONSTER = 4000 HP = 40 COINS GIVEN UPON DEATH"
+	    put "USE COINS TO BUY UPGRADES"
+	    put "   50 COINS PER UPGRADE; 2 UPGRADES"
+	    put "   BULLET SPEED (+ 1 SPEED)"
+	    put "   BULLET DAMAGE (+ 100 DAMAGE)"
+	    put "KILL BOSSES IN ALL CORNERS TO WIN"
+	    put "BOSSES SHOOT AT YOU"
+	    put "COLLECT GEMS TO GET COINS"
+	    put "   BLUE GEM = 20 COINS"
+	    put "   RED GEM = 50 COINS"
+	    put "   GREEN GEM = 100 COINS"
+	    put "MOVE TO THE SIDES OF THE SCREEN TO CHANGE LOCATIONS ON THE GREATER GRID"
+	    put "3X3 TOTAL GRID; 9 GRIDS TOTAL"
+	    put skip
+	    put "CREATED BY ARMAND SARKEZIANS"
+	    put "PRESS 'BACK' TO GO BACK TO THE MAIN MENU"
+	    Pic.Draw (menuBack, 0, 0, picCopy)
+	    if mX > 0 and mX < 200 and mY > 0 and mY < 100 and bD = 1 then
+		cls
+		exit
+	    end if
+	    View.Update
+	end loop
+    elsif mX > 400 and mX < 600 and mY > 300 and mY < 400 and bD = 1 then
+	cls
+	loop
+	    exit when endProcess = true
+	    Mouse.Where (mX, mY, bD)
+	    for decreasing x : 600 .. 0             %INTRODUCTION SCREEN
+		drawline (0, x, 1000, x, black)
+		delay (1)
+		View.Update
+	    end for
+	    Font.Draw ("Legend Of The Last Airbender", 180, 300, font, white)
+	    View.Update
+	    delay (2000)
+	    cls
+	    fork music
+	    middle
+	    View.Update
+	end loop
+    elsif mX > 400 and mX < 600 and mY > 0 and mY < 100 and bD = 1 then             %QUIT SCREEN
+	cls
+	locatexy (450, 300)
+	put "The Game Will Now End"
+	View.Update
+	delay (2000)
+	quit
+    end if
+    View.Update
+end loop
+end mainMenu
+
+mainMenu            %ONLY LINE OF CODE THAT RUNS
